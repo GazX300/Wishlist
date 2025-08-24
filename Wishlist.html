@@ -1,0 +1,135 @@
+<!doctype html>
+
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Наш вишлист</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f6f6f6;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    #wishlist {
+      list-style: none;
+      padding: 0;
+      max-width: 700px;
+      margin: 20px auto;
+    }
+    #wishlist li {
+      background: #fff;
+      margin: 10px 0;
+      padding: 12px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    a {
+      color: #0077cc;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      max-width: 700px;
+      margin: 20px auto;
+      gap: 10px;
+    }
+    input, select {
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      padding: 10px;
+      background: #0077cc;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+    .owner {
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #fff;
+      margin-left: 10px;
+    }
+    .me {
+      background: #28a745;
+    }
+    .her {
+      background: #e83e8c;
+    }
+  </style>
+</head>
+<body>
+  <h1>Наш вишлист 🎁</h1>  <form id="wishForm">
+    <input type="text" id="wishName" placeholder="Что хочется?" required>
+    <input type="url" id="wishLink" placeholder="Ссылка (необязательно)">
+    <select id="wishOwner" required>
+      <option value="me">Моё</option>
+      <option value="her">Её</option>
+    </select>
+    <button type="submit">Добавить</button>
+  </form>  <ul id="wishlist"></ul>  <script>
+    const form = document.getElementById('wishForm');
+    const wishName = document.getElementById('wishName');
+    const wishLink = document.getElementById('wishLink');
+    const wishOwner = document.getElementById('wishOwner');
+    const list = document.getElementById('wishlist');
+
+    let wishes = JSON.parse(localStorage.getItem('wishes') || '[]');
+
+    function render() {
+      list.innerHTML = '';
+      wishes.forEach((wish, index) => {
+        const li = document.createElement('li');
+        const text = wish.link 
+          ? `<a href="${wish.link}" target="_blank">${wish.name}</a>` 
+          : wish.name;
+        const owner = wish.owner === 'me' 
+          ? `<span class="owner me">Моё</span>` 
+          : `<span class="owner her">Её</span>`;
+        li.innerHTML = `<span>${text} ${owner}</span> <button onclick="removeWish(${index})">❌</button>`;
+        list.appendChild(li);
+      });
+    }
+
+    function removeWish(index) {
+      wishes.splice(index, 1);
+      localStorage.setItem('wishes', JSON.stringify(wishes));
+      render();
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = wishName.value.trim();
+      const link = wishLink.value.trim();
+      const owner = wishOwner.value;
+      if (!name) return;
+      wishes.push({ name, link, owner });
+      localStorage.setItem('wishes', JSON.stringify(wishes));
+      wishName.value = '';
+      wishLink.value = '';
+      wishOwner.value = 'me';
+      render();
+    });
+
+    render();
+  </script></body>
+</html>
