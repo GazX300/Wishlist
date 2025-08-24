@@ -37,7 +37,7 @@
     a:hover {
       text-decoration: underline;
     }
-    form {
+    form, .filter {
       display: flex;
       flex-direction: column;
       max-width: 700px;
@@ -86,18 +86,28 @@
       <option value="her">Её</option>
     </select>
     <button type="submit">Добавить</button>
-  </form>  <ul id="wishlist"></ul>  <script>
+  </form>  <div class="filter">
+    <label for="filterOwner">Показать:</label>
+    <select id="filterOwner">
+      <option value="all">Все</option>
+      <option value="me">Только мои</option>
+      <option value="her">Только её</option>
+    </select>
+  </div>  <ul id="wishlist"></ul>  <script>
     const form = document.getElementById('wishForm');
     const wishName = document.getElementById('wishName');
     const wishLink = document.getElementById('wishLink');
     const wishOwner = document.getElementById('wishOwner');
     const list = document.getElementById('wishlist');
+    const filterOwner = document.getElementById('filterOwner');
 
     let wishes = JSON.parse(localStorage.getItem('wishes') || '[]');
 
     function render() {
       list.innerHTML = '';
+      const filter = filterOwner.value;
       wishes.forEach((wish, index) => {
+        if (filter !== 'all' && wish.owner !== filter) return;
         const li = document.createElement('li');
         const text = wish.link 
           ? `<a href="${wish.link}" target="_blank">${wish.name}</a>` 
@@ -129,6 +139,8 @@
       wishOwner.value = 'me';
       render();
     });
+
+    filterOwner.addEventListener('change', render);
 
     render();
   </script></body>
